@@ -10,6 +10,7 @@ import Articles from './components/articles/articles';
 import { Contact } from './components/contact';
 import GoalSettingStrategiesPage from './components/goalSetting';
 import AdminDashboard from './components/admin';
+import { AdminLogin } from './components/admin/AdminLogin';
 import VideoPage from './components/videos';
 import ProblemRelief from './components/music/music';
 
@@ -41,14 +42,15 @@ function App() {
         <Route path="/goal" element={<GoalSettingStrategiesPage />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/landing" element={<LandingPage />} />
-        <Route path="/admin" element={<AdminDashboard/>} />
+        <Route path="/admin" element={<AdminDashboard />} />
+        <Route path="/adminlogin" element={<AdminLogin />} />
         <Route path="/signup" element={<SignUp />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/data" element={<DisplayData />} />
         <Route path="/articles" element={<Articles />} />
-        <Route path="/contact" element={<Contact/>} />
-        <Route path="/video" element={<VideoPage/>} />
-        <Route path="/music" element={<ProblemRelief/>} />
+        <Route path="/contact" element={<Contact />} />
+        <Route path="/video" element={<VideoPage />} />
+        <Route path="/music" element={<ProblemRelief />} />
         <Route path="/exercises" element={<ExercisePage />} />
         <Route path="/menadv" element={<Menadv />} />
         <Route path="/womenadv" element={<Womenadv />} />
@@ -63,7 +65,7 @@ function App() {
         <Route path="/querywomen" element={<QueryPages />} />
         <Route path="/mind" element={<MindfulnessPage />} />
         <Route path="/suryanamaskaram" element={<Surya />} />
-        
+
 
       </Routes>
     </BrowserRouter>

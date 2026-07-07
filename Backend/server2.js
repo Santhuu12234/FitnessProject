@@ -2,7 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import nodemailer from 'nodemailer';
 import cron from 'node-cron';
-import { MongoClient } from 'mongodb';
+import { MongoClient, ObjectId } from 'mongodb';
 import dotenv from 'dotenv';
 
 dotenv.config();
@@ -41,11 +41,14 @@ app.use(cors({
 app.use(express.json());
 
 // Email Configuration
+const SENDER_EMAIL = process.env.EMAIL_USER || 'santoshkumarkowru@gmail.com';
+const SENDER_PASS = process.env.EMAIL_PASS || 'ypry xola qyus ixgp'; // Note: User needs to use app password for santoshkumarkowru@gmail.com
+
 const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
-        user: 'ktejaswi12234@gmail.com',
-        pass: 'ypry xola qyus ixgp' // Use App Password, NOT your actual password
+        user: SENDER_EMAIL,
+        pass: SENDER_PASS
     }
 });
 
@@ -70,7 +73,7 @@ const scheduleReminder = (email) => {
 
     reminderJobs[email] = cron.schedule('*/60 * * * *', async () => {
         const mailOptions = {
-            from: 'ktejaswi12234@gmail.com',
+            from: SENDER_EMAIL,
             to: email,
             subject: 'Reminder to Complete Your Goal Setting',
             text: 'You have added a new task. Please make sure to complete your goal setting!',
@@ -137,7 +140,7 @@ app.post('/signup', async (req, res) => {
 
         // Send Welcome Email safely with callback to avoid unhandled rejections
         transporter.sendMail({
-            from: 'ktejaswi12234@gmail.com',
+            from: SENDER_EMAIL,
             to: email,
             subject: 'Welcome to Soul Flex',
             text: 'Welcome to Soul Flex!'
@@ -174,7 +177,7 @@ app.post('/signin', async (req, res) => {
 
                 // Send Sign-in Email safely with callback to avoid unhandled rejections
                 transporter.sendMail({
-                    from: 'ktejaswi12234@gmail.com',
+                    from: SENDER_EMAIL,
                     to: email,
                     subject: 'Welcome to Soul Flex',
                     text: 'Welcome to Soul Flex!'
@@ -202,6 +205,52 @@ app.post('/signin', async (req, res) => {
     } catch (e) {
         console.error("Error during sign-in:", e);
         return res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+// Admin management APIs
+app.post('/ast', async (req, res) => {
+    try {
+        const users = await db.collection("ast").find().toArray();
+        res.json(users);
+    } catch (e) {
+        console.error("Error fetching users:", e);
+        res.status(500).json({ error: "Internal server error" });
+    }
+});
+
+app.get('/admin/tasks', async (req, res) => {
+    try {
+        const tasks = await db.collection("tasks").find().toArray();
+        res.json(tasks);
+    } catch (e) {
+        console.error("Error fetching tasks:", e);
+        res.status(500).json({ error: "Internal server error" });
+    }
+});
+
+app.delete('/admin/users/:email', async (req, res) => {
+    try {
+        const email = req.params.email;
+        // Delete user account
+        await db.collection("ast").deleteOne({ email });
+        // Clean up user scheduled tasks
+        await db.collection("tasks").deleteMany({ email });
+        res.json({ success: true, message: "User account and goals purged successfully" });
+    } catch (e) {
+        console.error("Error purging user:", e);
+        res.status(500).json({ error: "Internal server error" });
+    }
+});
+
+app.delete('/admin/tasks/:id', async (req, res) => {
+    try {
+        const id = req.params.id;
+        await db.collection("tasks").deleteOne({ _id: new ObjectId(id) });
+        res.json({ success: true, message: "Task removed successfully" });
+    } catch (e) {
+        console.error("Error purging task:", e);
+        res.status(500).json({ error: "Internal server error" });
     }
 });
 

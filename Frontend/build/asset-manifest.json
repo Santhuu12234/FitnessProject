@@ -1,7 +1,7 @@
 {
   "files": {
     "main.css": "/static/css/main.9b0b3fa8.css",
-    "main.js": "/static/js/main.62ddbbd7.js",
+    "main.js": "/static/js/main.ba6ec4d3.js",
     "reactPlayerYouTube.js": "/static/js/reactPlayerYouTube.9723d7aa.chunk.js",
     "reactPlayerSoundCloud.js": "/static/js/reactPlayerSoundCloud.fcc564f9.chunk.js",
     "reactPlayerVimeo.js": "/static/js/reactPlayerVimeo.57663333.chunk.js",
@@ -21,7 +21,7 @@
     "static/media/soulflexlogo.png": "/static/media/soulflexlogo.99ef2e1de69b6cf3d44b.png",
     "index.html": "/index.html",
     "main.9b0b3fa8.css.map": "/static/css/main.9b0b3fa8.css.map",
-    "main.62ddbbd7.js.map": "/static/js/main.62ddbbd7.js.map",
+    "main.ba6ec4d3.js.map": "/static/js/main.ba6ec4d3.js.map",
     "reactPlayerYouTube.9723d7aa.chunk.js.map": "/static/js/reactPlayerYouTube.9723d7aa.chunk.js.map",
     "reactPlayerSoundCloud.fcc564f9.chunk.js.map": "/static/js/reactPlayerSoundCloud.fcc564f9.chunk.js.map",
     "reactPlayerVimeo.57663333.chunk.js.map": "/static/js/reactPlayerVimeo.57663333.chunk.js.map",
@@ -40,6 +40,6 @@
   },
   "entrypoints": [
     "static/css/main.9b0b3fa8.css",
-    "static/js/main.62ddbbd7.js"
+    "static/js/main.ba6ec4d3.js"
   ]
 }
