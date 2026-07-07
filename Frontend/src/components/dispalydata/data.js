@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import { api } from '../actions/api';
 
 export const DisplayData = () => {
     const [users, setUsers] = useState([]);
@@ -7,7 +8,7 @@ export const DisplayData = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await axios.post('http://localhost:9000/ast');
+                const response = await axios.post(`${api}/ast`);
                 setUsers(response.data);
             } catch (error) {
                 console.error('Error fetching user data:', error);

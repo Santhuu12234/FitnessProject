@@ -20,8 +20,10 @@ import {
 import { motion } from "framer-motion";
 import { useState } from "react";
 import axios from "axios";
+import { api } from "./actions/api";
 
 const MotionBox = motion(Box);
+const MotionHeading = motion(Heading);
 
 const GoalSetting = () => {
   const [tasks, setTasks] = useState([]);
@@ -31,11 +33,11 @@ const GoalSetting = () => {
   const handleAddTask = async () => {
     if (newTask.trim() && time) {
       try {
-        const response = await axios.post('http://localhost:9000/addTask', {
+        const response = await axios.post(`${api}/addTask`, {
           email: 'chegondirithinsurya@gmail.com',  // Replace with the actual user email
           task: { task: newTask, time }
         });
-  
+
         if (response.status === 200) {
           console.log('Task added successfully:', response.data);
           setTasks([...tasks, { task: newTask, time, done: false }]);
@@ -65,14 +67,14 @@ const GoalSetting = () => {
   const handleDeleteTask = (index) => {
     // Remove the task at the specified index
     const updatedTasks = tasks.filter((_, i) => i !== index);
-    
+
     // Update the state with the new tasks list
     setTasks(updatedTasks);
-  
+
     // Show a success message
     alert('Task removed successfully');
   };
-  
+
 
 
   return (
@@ -95,20 +97,19 @@ const GoalSetting = () => {
         bg="white"
         p={6}
       >
-        <Heading
+        <MotionHeading
           as="h1"
           size="2xl"
           textAlign="center"
           color="gray.800"
           mb={6}
           fontFamily="serif"
-          as={motion.div}
           initial={{ scale: 0.8, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
-          transition="0.5s ease-in-out"
+          transition={{ duration: 0.5, ease: "easeInOut" }}
         >
           Goal Setting Strategies
-        </Heading>
+        </MotionHeading>
 
         <VStack spacing={6} align="stretch">
           {/* SMART Goals Section */}
@@ -296,18 +297,18 @@ const GoalSetting = () => {
                           onClick={() => handleDeleteTask(index)}
                         >
                           Delete
-                          </Button>
-                          </HStack>
-                        </HStack>
-                      ))}
-                    </VStack>
-                  </VStack>
-                </CardBody>
-              </Card>
-            </VStack>
-          </Flex>
-        </Flex>
-      );
-    };
+                        </Button>
+                      </HStack>
+                    </HStack>
+                  ))}
+                </VStack>
+              </VStack>
+            </CardBody>
+          </Card>
+        </VStack>
+      </Flex>
+    </Flex>
+  );
+};
 
-    export default GoalSetting;
+export default GoalSetting;

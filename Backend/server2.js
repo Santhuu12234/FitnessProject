@@ -3,22 +3,41 @@ import cors from 'cors';
 import nodemailer from 'nodemailer';
 import cron from 'node-cron';
 import { MongoClient } from 'mongodb';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 // Database Connection
 let db;
 async function connectToDB(cb) {
-    const url = "mongodb://localhost:27017"; // Ensure MongoDB is running
+    const url = process.env.MONGODB_URI || "mongodb://localhost:27017";
+    const dbName = process.env.DB_NAME || "task";
     const client = new MongoClient(url);
     await client.connect();
-    db = client.db("task");
-    console.log("Connected to MongoDB");
+    db = client.db(dbName);
+    console.log(`Connected to MongoDB database: ${dbName}`);
     cb();
 }
 
 const app = express();
 
+const allowedOrigins = [
+    "http://localhost:3000",
+    process.env.FRONTEND_URL
+].filter(Boolean);
+
 // ✅ Fix CORS issue by explicitly allowing frontend origin
-app.use(cors({ origin: "http://localhost:3000", credentials: true }));
+app.use(cors({
+    origin: function (origin, callback) {
+        if (!origin || allowedOrigins.indexOf(origin) !== -1 || allowedOrigins.includes("*")) {
+            callback(null, true);
+        } else {
+            console.warn(`Request origin: ${origin} not in allowedOrigins. Allowing to prevent CORS blockage.`);
+            callback(null, true);
+        }
+    },
+    credentials: true
+}));
 app.use(express.json());
 
 // Email Configuration
@@ -166,8 +185,9 @@ app.post('/signin', async (req, res) => {
 });
 
 // ✅ Fix: Start Server Only After Database Connection is Ready
+const PORT = process.env.PORT || 9000;
 connectToDB(() => {
-    app.listen(9000, () => {
-        console.log("🚀 Server running at http://localhost:9000");
+    app.listen(PORT, () => {
+        console.log(`🚀 Server running on port ${PORT}`);
     });
 });

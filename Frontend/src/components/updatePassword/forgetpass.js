@@ -19,8 +19,7 @@ import { FaLock, FaEnvelope, FaMobileAlt, FaArrowLeft } from "react-icons/fa";
 import { Link as RouterLink } from 'react-router-dom';
 import axios from "axios";
 import { motion } from "framer-motion";
-
-const api = "http://localhost:9000"; // Adjust this according to your backend server URL
+import { api } from "../actions/api";
 
 export const ForgotPassword = () => {
     const [email, setEmail] = useState("");
@@ -49,7 +48,7 @@ export const ForgotPassword = () => {
     const handleVerifyOtp = async () => {
         try {
             const response = await axios.post(`${api}/verify-otp`, { email, otp });
-            
+
             if (response.status === 200) {
                 setOtpVerified(true);
                 alert("OTP Verified!");
@@ -157,18 +156,18 @@ export const ForgotPassword = () => {
                             </InputGroup>
                         </FormControl>
                         <Box mt={7}>
-                        <Button
-                            bg={colorMode === "dark" ? "gray.600" : "gray.700"}
-                            color={colorMode === "dark" ? "whiteAlpha.900" : "white"}
-                            _hover={{ bg: colorMode === "dark" ? "gray.500" : "black.600" }}
-                            _active={{ bg: colorMode === "dark" ? "gray.400" : "black.800" }}
-                            colorScheme="blackAlpha"
-                            onClick={handleSendOtp}
-                            isDisabled={!email || !mobile}
-                            borderRadius="md"
-                        >
-                            Send OTP
-                        </Button></Box>
+                            <Button
+                                bg={colorMode === "dark" ? "gray.600" : "gray.700"}
+                                color={colorMode === "dark" ? "whiteAlpha.900" : "white"}
+                                _hover={{ bg: colorMode === "dark" ? "gray.500" : "black.600" }}
+                                _active={{ bg: colorMode === "dark" ? "gray.400" : "black.800" }}
+                                colorScheme="blackAlpha"
+                                onClick={handleSendOtp}
+                                isDisabled={!email || !mobile}
+                                borderRadius="md"
+                            >
+                                Send OTP
+                            </Button></Box>
                     </Flex>
 
                     <Flex direction="row" align="center" spacing={4}>
@@ -189,18 +188,18 @@ export const ForgotPassword = () => {
                             </InputGroup>
                         </FormControl>
                         <Box mt={7}>
-                        <Button
-                            bg={colorMode === "dark" ? "gray.600" : "gray.700"}
-                            color={colorMode === "dark" ? "whiteAlpha.900" : "white"}
-                            _hover={{ bg: colorMode === "dark" ? "gray.500" : "black.600" }}
-                            _active={{ bg: colorMode === "dark" ? "gray.400" : "black.800" }}
-                            colorScheme="blackAlpha"
-                            onClick={handleVerifyOtp}
-                            isDisabled={!otp}
-                            borderRadius="md"
-                        >
-                            Verify OTP
-                        </Button></Box>
+                            <Button
+                                bg={colorMode === "dark" ? "gray.600" : "gray.700"}
+                                color={colorMode === "dark" ? "whiteAlpha.900" : "white"}
+                                _hover={{ bg: colorMode === "dark" ? "gray.500" : "black.600" }}
+                                _active={{ bg: colorMode === "dark" ? "gray.400" : "black.800" }}
+                                colorScheme="blackAlpha"
+                                onClick={handleVerifyOtp}
+                                isDisabled={!otp}
+                                borderRadius="md"
+                            >
+                                Verify OTP
+                            </Button></Box>
                     </Flex>
 
                     {otpVerified && (

@@ -19,6 +19,7 @@ import {
     IconButton
 } from "@chakra-ui/react";
 import axios from 'axios';
+import { api } from "../actions/api";
 import { useState, useRef } from "react";
 import { Link as RouterLink } from 'react-router-dom';
 import { FaUser, FaEnvelope, FaLock, FaMobileAlt, FaArrowLeft } from "react-icons/fa";
@@ -45,7 +46,7 @@ export const SignUp = () => {
         }
 
         try {
-            const response = await axios.post("http://localhost:9000/signup", { name, password, email, mobile });
+            const response = await axios.post(`${api}/signup`, { name, password, email, mobile });
             if (response.data.message === 'Registration successful') {
                 alert("Registration successful");
                 window.location.href = "/signin";
@@ -83,7 +84,7 @@ export const SignUp = () => {
             paddingBottom="200px"
             position="relative"
         >
-            
+
 
             <Flex
                 width="70%"
@@ -138,22 +139,22 @@ export const SignUp = () => {
                     initial={{ x: 200, opacity: 0 }}
                     animate={{ x: 0, opacity: 1 }}
                     transition="0.5s ease-in-out"
-                    
+
                 >
 
                     <Card boxShadow="md" borderRadius="lg" bg={cardBg}>
-                    <IconButton
-                icon={<FaArrowLeft />}
-                aria-label="Back to Sign In"
-                position="absolute"
-                top="10px"
-                left="10px"
-                bg={useColorModeValue("gray.200", "gray.700")}
-                color={useColorModeValue("gray.800", "white")}
-                _hover={{ bg: useColorModeValue("gray.300", "gray.600") }}
-                as={RouterLink}
-                to="/signin"
-            />
+                        <IconButton
+                            icon={<FaArrowLeft />}
+                            aria-label="Back to Sign In"
+                            position="absolute"
+                            top="10px"
+                            left="10px"
+                            bg={useColorModeValue("gray.200", "gray.700")}
+                            color={useColorModeValue("gray.800", "white")}
+                            _hover={{ bg: useColorModeValue("gray.300", "gray.600") }}
+                            as={RouterLink}
+                            to="/signin"
+                        />
                         <CardBody>
                             <VStack spacing={4} align="stretch">
                                 <Heading
