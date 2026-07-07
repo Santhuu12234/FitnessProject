@@ -254,6 +254,121 @@ app.delete('/admin/tasks/:id', async (req, res) => {
     }
 });
 
+// OTP Implementation
+const otpStore = {};
+
+// Send OTP
+app.post('/send-otp', async (req, res) => {
+    try {
+        const { email } = req.body;
+
+        if (!email) {
+            return res.status(400).json({ error: "Email is required" });
+        }
+
+        // Check if user exists in ast collection
+        const user = await db.collection("ast").findOne({ email });
+        if (!user) {
+            return res.status(404).json({ error: "User with this email is not registered." });
+        }
+
+        // Generate 6-digit OTP
+        const otp = Math.floor(100000 + Math.random() * 900000).toString();
+        // Save OTP with 5 mins expiry
+        otpStore[email] = {
+            otp,
+            expires: Date.now() + 5 * 60 * 1000, // 5 minutes
+            verified: false
+        };
+
+        // Send OTP email
+        transporter.sendMail({
+            from: SENDER_EMAIL,
+            to: email,
+            subject: 'Soul Flex - Password Reset OTP',
+            text: `Your OTP for resetting password is: ${otp}. It is valid for 5 minutes.`
+        }, (error, info) => {
+            if (error) {
+                console.error("Failed to send OTP email:", error);
+            } else {
+                console.log("OTP email sent successfully:", info.response);
+            }
+        });
+
+        res.status(200).json({ message: "OTP sent successfully" });
+    } catch (e) {
+        console.error("Error sending OTP:", e);
+        res.status(500).json({ error: "Internal server error" });
+    }
+});
+
+// Verify OTP
+app.post('/verify-otp', async (req, res) => {
+    try {
+        const { email, otp } = req.body;
+
+        if (!email || !otp) {
+            return res.status(400).json({ error: "Email and OTP are required" });
+        }
+
+        const storedData = otpStore[email];
+        if (!storedData) {
+            return res.status(400).json({ error: "No OTP request found for this email" });
+        }
+
+        if (Date.now() > storedData.expires) {
+            delete otpStore[email];
+            return res.status(400).json({ error: "OTP expired" });
+        }
+
+        if (storedData.otp !== otp.toString()) {
+            return res.status(400).json({ error: "Invalid OTP" });
+        }
+
+        // Mark OTP as verified
+        storedData.verified = true;
+        res.status(200).json({ message: "OTP verified successfully" });
+    } catch (e) {
+        console.error("Error verifying OTP:", e);
+        res.status(500).json({ error: "Internal server error" });
+    }
+});
+
+// Reset Password
+app.put('/reset-password', async (req, res) => {
+    try {
+        const { email, newPassword } = req.body;
+
+        if (!email || !newPassword) {
+            return res.status(400).json({ error: "Email and new password are required" });
+        }
+
+        const storedData = otpStore[email];
+        // Ensure OTP was verified first
+        if (!storedData || !storedData.verified) {
+            return res.status(400).json({ error: "Please verify OTP before resetting password" });
+        }
+
+        // Update password in db
+        const result = await db.collection("ast").updateOne(
+            { email },
+            { $set: { password: newPassword } }
+        );
+
+        if (result.matchedCount === 0) {
+            return res.status(404).json({ error: "User not found" });
+        }
+
+        // Clear OTP store
+        delete otpStore[email];
+
+        res.status(200).json({ message: "Password updated successfully" });
+    } catch (e) {
+        console.error("Error resetting password:", e);
+        res.status(500).json({ error: "Internal server error" });
+    }
+});
+
 // ✅ Fix: Start Server Only After Database Connection is Ready
 const PORT = process.env.PORT || 9000;
 connectToDB(() => {

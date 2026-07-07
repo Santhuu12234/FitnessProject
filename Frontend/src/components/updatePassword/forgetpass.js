@@ -23,7 +23,6 @@ import { api } from "../actions/api";
 
 export const ForgotPassword = () => {
     const [email, setEmail] = useState("");
-    const [mobile, setMobile] = useState("");
     const [otp, setOtp] = useState("");
     const [newPassword, setNewPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
@@ -138,37 +137,20 @@ export const ForgotPassword = () => {
                         </InputGroup>
                     </FormControl>
 
-                    <Flex direction="row" align="center" spacing={4}>
-                        <FormControl id="mobile" flex="1" mr={4}>
-                            <FormLabel>Mobile Number</FormLabel>
-                            <InputGroup>
-                                <InputRightElement children={<FaMobileAlt color={colorMode === "dark" ? "gray.400" : "gray.500"} />} />
-                                <Input
-                                    type="tel"
-                                    placeholder="Enter your mobile number"
-                                    value={mobile}
-                                    onChange={(e) => setMobile(e.target.value)}
-                                    focusBorderColor={colorMode === "dark" ? "whiteAlpha.900" : "black"}
-                                    borderColor={colorMode === "dark" ? "gray.600" : "gray.300"}
-                                    borderRadius="md"
-                                    bg={colorMode === "dark" ? "gray.600" : "white"}
-                                />
-                            </InputGroup>
-                        </FormControl>
-                        <Box mt={7}>
-                            <Button
-                                bg={colorMode === "dark" ? "gray.600" : "gray.700"}
-                                color={colorMode === "dark" ? "whiteAlpha.900" : "white"}
-                                _hover={{ bg: colorMode === "dark" ? "gray.500" : "black.600" }}
-                                _active={{ bg: colorMode === "dark" ? "gray.400" : "black.800" }}
-                                colorScheme="blackAlpha"
-                                onClick={handleSendOtp}
-                                isDisabled={!email || !mobile}
-                                borderRadius="md"
-                            >
-                                Send OTP
-                            </Button></Box>
-                    </Flex>
+                    <Button
+                        bg={colorMode === "dark" ? "gray.600" : "gray.700"}
+                        color={colorMode === "dark" ? "whiteAlpha.900" : "white"}
+                        _hover={{ bg: colorMode === "dark" ? "gray.500" : "black.600" }}
+                        _active={{ bg: colorMode === "dark" ? "gray.400" : "black.800" }}
+                        colorScheme="blackAlpha"
+                        onClick={handleSendOtp}
+                        isDisabled={!email}
+                        borderRadius="md"
+                        width="100%"
+                        mt={2}
+                    >
+                        Send OTP
+                    </Button>
 
                     <Flex direction="row" align="center" spacing={4}>
                         <FormControl id="otp" flex="1" mr={4}>
