@@ -42,7 +42,7 @@ app.use(express.json());
 
 // Email Configuration
 const SENDER_EMAIL = process.env.EMAIL_USER || 'santoshkumarkowru@gmail.com';
-const SENDER_PASS = process.env.EMAIL_PASS || 'ypry xola qyus ixgp'; // Note: User needs to use app password for santoshkumarkowru@gmail.com
+const SENDER_PASS = process.env.EMAIL_PASS || 'ebov layt pala nrti'; // Note: User needs to use app password for santoshkumarkowru@gmail.com
 
 const transporter = nodemailer.createTransport({
     service: 'gmail',
