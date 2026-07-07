@@ -172,22 +172,6 @@ export const SignUp = () => {
                                     Create an Account
                                 </Heading>
 
-                                <Box
-                                    p={3}
-                                    bg="orange.50"
-                                    border="1px dashed"
-                                    borderColor="orange.350"
-                                    borderRadius="md"
-                                    mb={2}
-                                >
-                                    <Text fontSize="xs" color="orange.800" fontWeight="bold">
-                                        🔑 Admin Login Access:
-                                    </Text>
-                                    <Text fontSize="xs" color="orange.800">
-                                        Email: <strong>santosh@gmail.com</strong> | Password: <strong>santosh</strong>
-                                    </Text>
-                                </Box>
-
                                 <HStack spacing={4} width="100%">
                                     <FormControl>
                                         <FormLabel>Email address</FormLabel>
@@ -293,6 +277,18 @@ export const SignUp = () => {
                                         fontWeight="bold"
                                     >
                                         Sign In
+                                    </Link>
+                                </Text>
+
+                                <Text textAlign="center" color={textColor} fontSize="sm" mt={1}>
+                                    Are you an administrator?{" "}
+                                    <Link
+                                        as={RouterLink}
+                                        to="/adminlogin"
+                                        color={linkColor}
+                                        fontWeight="bold"
+                                    >
+                                        Admin Login
                                     </Link>
                                 </Text>
                             </VStack>
