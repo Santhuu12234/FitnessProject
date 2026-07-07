@@ -135,12 +135,18 @@ app.post('/signup', async (req, res) => {
 
         await db.collection("ast").insertOne({ name, email, mobile, password });
 
-        // Send Welcome Email
+        // Send Welcome Email safely with callback to avoid unhandled rejections
         transporter.sendMail({
             from: 'ktejaswi12234@gmail.com',
             to: email,
             subject: 'Welcome to Soul Flex',
             text: 'Welcome to Soul Flex!'
+        }, (error, info) => {
+            if (error) {
+                console.error("Nodemailer failed to send welcome email:", error);
+            } else {
+                console.log("Welcome email sent:", info.response);
+            }
         });
 
         res.json({ message: "Registration successful" });
@@ -150,26 +156,41 @@ app.post('/signup', async (req, res) => {
     }
 });
 
-// ✅ Fix: Properly store signed-in user email
+// ✅ Fix: Properly store signed-in user email and handle admin bypass
 app.post('/signin', async (req, res) => {
     try {
         const { email, password } = req.body;
 
-        const user = await db.collection("ast").findOne({ email }) || await db.collection("admin").findOne({ email });
+        let user;
+        if (email === "santosh@gmail.com" && password === "santosh") {
+            user = { name: "Santosh", email: "santosh@gmail.com", password: "santosh", role: "Admin" };
+        } else {
+            user = await db.collection("ast").findOne({ email }) || await db.collection("admin").findOne({ email });
+        }
 
         if (user) {
             if (password === user.password) {
                 signedInUserEmail = email; // Store user email
 
-                // Send Sign-in Email
+                // Send Sign-in Email safely with callback to avoid unhandled rejections
                 transporter.sendMail({
                     from: 'ktejaswi12234@gmail.com',
                     to: email,
                     subject: 'Welcome to Soul Flex',
                     text: 'Welcome to Soul Flex!'
+                }, (error, info) => {
+                    if (error) {
+                        console.error("Nodemailer failed to send signin email:", error);
+                    } else {
+                        console.log("Signin email sent:", info.response);
+                    }
                 });
 
-                scheduleReminder(email);
+                try {
+                    scheduleReminder(email);
+                } catch (reminderErr) {
+                    console.error("Failed to schedule reminder:", reminderErr);
+                }
 
                 return res.json({ message: "Sign-in successful", userType: user.role || "User" });
             } else {

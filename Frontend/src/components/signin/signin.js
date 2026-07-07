@@ -44,10 +44,14 @@ export const SignIn = () => {
             console.log("Sending sign-in request:", { email: name, password });
             const res = await axios.post(api + "/signin", { email: name, password });
             console.log("Server response:", res.data);
-            
+
             if (res.data.message === "Sign-in successful") {
                 alert("Sign-in successful");
-                navigate("/mainpage");
+                if (res.data.userType === "Admin") {
+                    navigate("/admin");
+                } else {
+                    navigate("/mainpage");
+                }
             } else {
                 alert(res.data.error || "Unexpected error");
             }
@@ -56,13 +60,13 @@ export const SignIn = () => {
             alert("Sign-in failed. Please try again.");
         }
     };
-    
-    
-    
-    
-    
-    
-    
+
+
+
+
+
+
+
 
     const handleEmailKeyPress = (e) => {
         if (e.key === "Enter") {
@@ -75,16 +79,16 @@ export const SignIn = () => {
     };
 
     return (
-        <Flex 
-            height="100vh" 
-            bg={bg} 
-            alignItems="center" 
+        <Flex
+            height="100vh"
+            bg={bg}
+            alignItems="center"
             justifyContent="center"
         >
-            <Flex 
-                width="67%" 
+            <Flex
+                width="67%"
                 maxWidth="1200px"
-                boxShadow="xl" 
+                boxShadow="xl"
                 borderRadius="lg"
                 overflow="hidden"
                 bg="white"
@@ -92,9 +96,9 @@ export const SignIn = () => {
                 {/* Left Side with Full Image */}
                 <Box
                     width="60%"
-                    bg="black" 
-                    display="flex" 
-                    justifyContent="center" 
+                    bg="black"
+                    display="flex"
+                    justifyContent="center"
                     alignItems="center"
                     padding={0}
                     as={motion.div}
@@ -102,8 +106,8 @@ export const SignIn = () => {
                     animate={{ x: 0, opacity: 1 }}
                     transition="0.5s ease-in-out"
                 >
-                    <Image 
-                        src={soulflexImage} 
+                    <Image
+                        src={soulflexImage}
                         alt="Soul Flex"
                         objectFit="cover"
                         width="70%"
@@ -127,19 +131,19 @@ export const SignIn = () => {
                         <CardBody>
                             <VStack spacing={4} align="stretch">
                                 {/* Back Button */}
-                                <IconButton 
-                                    icon={<ArrowBackIcon />} 
+                                <IconButton
+                                    icon={<ArrowBackIcon />}
                                     aria-label="Back"
-                                    variant="outline" 
+                                    variant="outline"
                                     colorScheme="gray"
                                     alignSelf="flex-start"
                                     onClick={handleBackClick}
                                 />
 
-                                <Heading 
-                                    as="h2" 
-                                    size="lg" 
-                                    textAlign="center" 
+                                <Heading
+                                    as="h2"
+                                    size="lg"
+                                    textAlign="center"
                                     color={textColor}
                                     fontFamily="serif"
                                     mb={4}
@@ -149,9 +153,9 @@ export const SignIn = () => {
                                 >
                                     Welcome back to Soul Flex!
                                 </Heading>
-                                <Text 
-                                    fontSize="sm" 
-                                    textAlign="center" 
+                                <Text
+                                    fontSize="sm"
+                                    textAlign="center"
                                     color={secondaryTextColor}
                                     mb={4}
                                 >
@@ -160,31 +164,31 @@ export const SignIn = () => {
 
                                 <FormControl id="email">
                                     <FormLabel>Email</FormLabel>
-                                    <Input 
-                                        type="email" 
-                                        placeholder="Enter your email" 
-                                        focusBorderColor="black" 
-                                        onChange={(e) => setName(e.target.value)} 
-                                        onKeyPress={handleEmailKeyPress} 
+                                    <Input
+                                        type="email"
+                                        placeholder="Enter your email"
+                                        focusBorderColor="black"
+                                        onChange={(e) => setName(e.target.value)}
+                                        onKeyPress={handleEmailKeyPress}
                                     />
                                 </FormControl>
 
                                 <FormControl id="password">
                                     <FormLabel>Password</FormLabel>
-                                    <Input 
-                                        type="password" 
+                                    <Input
+                                        type="password"
                                         placeholder="Enter your password"
-                                        focusBorderColor="black" 
-                                        onChange={(e) => setPassword(e.target.value)} 
-                                        ref={passwordRef} 
+                                        focusBorderColor="black"
+                                        onChange={(e) => setPassword(e.target.value)}
+                                        ref={passwordRef}
                                     />
                                 </FormControl>
 
-                                <Box 
-                                    display="flex" 
-                                    justifyContent="space-between" 
+                                <Box
+                                    display="flex"
+                                    justifyContent="space-between"
                                     width="100%"
-                                    fontSize="sm" 
+                                    fontSize="sm"
                                     color={secondaryTextColor}
                                     mb={4}
                                 >
@@ -194,18 +198,18 @@ export const SignIn = () => {
                                     </Link>
                                 </Box>
 
-                                <MotionButton 
-                                    bg="black" 
-                                    color="white" 
-                                    size="lg" 
-                                    mt={4} 
-                                    _hover={{ bg: "gray.800" }} 
+                                <MotionButton
+                                    bg="black"
+                                    color="white"
+                                    size="lg"
+                                    mt={4}
+                                    _hover={{ bg: "gray.800" }}
                                     onClick={Signin}
                                     whileHover={{ scale: 1.05 }}
                                     whileTap={{ scale: 0.95 }}
                                 > <Link as={RouterLink} to="/mainpage" color={secondaryTextColor}>
-                            
-                            </Link>
+
+                                    </Link>
                                     Sign In
                                 </MotionButton>
 
@@ -224,10 +228,10 @@ export const SignIn = () => {
 
                                 <Text textAlign="center" color={secondaryTextColor} fontSize="sm" mt={2}>
                                     Don't have an account?{" "}
-                                    <Link 
-                                        as={RouterLink} 
-                                        to="/signup" 
-                                        color={signUpLinkColor} 
+                                    <Link
+                                        as={RouterLink}
+                                        to="/signup"
+                                        color={signUpLinkColor}
                                         fontWeight="bold"
                                     >
                                         Sign up

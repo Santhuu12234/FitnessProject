@@ -21,7 +21,7 @@ import {
 import axios from 'axios';
 import { api } from "../actions/api";
 import { useState, useRef } from "react";
-import { Link as RouterLink } from 'react-router-dom';
+import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import { FaUser, FaEnvelope, FaLock, FaMobileAlt, FaArrowLeft } from "react-icons/fa";
 import { motion } from "framer-motion";
 import soulflexImage from '../img/soulflex.png';
@@ -33,6 +33,7 @@ export const SignUp = () => {
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
     const passwordRef = useRef(null);
+    const navigate = useNavigate();
 
     const handleSignUp = async () => {
         if (!name || !email || !mobile || !password || !confirmPassword) {
@@ -49,7 +50,7 @@ export const SignUp = () => {
             const response = await axios.post(`${api}/signup`, { name, password, email, mobile });
             if (response.data.message === 'Registration successful') {
                 alert("Registration successful");
-                window.location.href = "/signin";
+                navigate("/signin");
             }
         } catch (e) {
             if (e.response && e.response.status === 409) {
