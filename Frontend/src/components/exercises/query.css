@@ -1,0 +1,78 @@
+.container {
+    max-width: 900px; /* Increased width for three questions side by side */
+    margin: 50px auto;
+    padding: 30px;
+    background-color: white;
+    border-radius: 20px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+    font-family: Arial, sans-serif;
+    background-image: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    animation: fadeIn 1s ease-in-out;
+  }
+  
+  .header {
+    text-align: center;
+    color: #333;
+    font-size: 28px;
+    margin-bottom: 20px;
+    animation: slideInFromTop 1s ease-in-out;
+  }
+  
+  .form {
+    animation: fadeInUp 1s ease-in-out;
+  }
+  
+  /* Flexbox container for the first three questions */
+  .question-row {
+    display: flex;
+    justify-content: space-between; /* Add spacing between the questions */
+    margin-bottom: 30px;
+  }
+  
+  .question {
+    width: 30%; /* Set width to allow three questions side by side */
+    padding: 20px;
+    background-color: #ffffff;
+    border-radius: 15px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    text-align: center; 
+    animation: popIn 0.5s ease-in-out;
+  }
+  
+  .question:hover {
+    transform: scale(1.05);
+  }
+  
+  .options {
+    margin-top: 15px;
+    margin-left: auto;
+    margin-right: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start; /* Align options to the left */
+    padding-left: 20px; /* Add some padding for better spacing */
+  }
+  
+  .submitBtn {
+    display: block;
+    width: 100%;
+    padding: 12px;
+    background-color: #3d3d3d;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 18px;
+    transition: background-color 0.3s ease;
+  }
+  
+  .submitBtn:hover {
+    background-color: #0a0a0a;
+  }
+  
+  /* Animation for pop effect */
+  @keyframes popIn {
+    0% { transform: scale(0.8); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+  }
