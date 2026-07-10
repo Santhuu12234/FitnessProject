@@ -92,7 +92,7 @@ export const LandingPage = () => {
         right={0}
         bg={colorMode === 'light' ? 'black' : 'gray.800'}
         color="white"
-        p={4}
+        p={{ base: 2, md: 4 }}
         boxShadow="lg"
         zIndex={999}
         initial={{ y: -60 }}
@@ -104,18 +104,18 @@ export const LandingPage = () => {
             <Image
               src={soulflexLogo}// Update the path to your logo image
               alt="Soul Flex Logo"
-              boxSize="65px" // Adjust the size as needed
-              mr={4}
+              boxSize={{ base: "45px", md: "65px" }} // Adjust the size as needed
+              mr={{ base: 2, md: 4 }}
             />
-            <Heading as="h1" size="lg" fontFamily="serif">
+            <Heading as="h1" fontSize={{ base: "xl", md: "2xl" }} fontFamily="serif">
               Soul Flex
             </Heading>
           </Flex>
-          <HStack spacing={8} alignItems="center">
+          <HStack spacing={{ base: 2, md: 8 }} alignItems="center">
             <IconButton
               icon={colorMode === 'light' ? <FaMoon /> : <FaSun />}
               isRound
-              size="md"
+              size={{ base: "sm", md: "md" }}
               onClick={toggleColorMode}
               aria-label="Toggle Dark Mode"
             />

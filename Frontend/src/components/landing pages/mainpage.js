@@ -9,14 +9,18 @@ import {
   GridItem,
   IconButton,
   HStack,
+  VStack,
   useColorMode,
+  useDisclosure,
+  useBreakpointValue,
   Menu,
   MenuButton,
   MenuList,
   MenuItem,
   Image,
   Center,
-  Icon
+  Icon,
+  Collapse
 } from "@chakra-ui/react";
 import { motion } from "framer-motion";
 import { Link as RouterLink, useLocation } from "react-router-dom";
@@ -36,7 +40,9 @@ import {
   FaEnvelope,
   FaWhatsapp,
   FaFacebookF,
-  FaInstagram
+  FaInstagram,
+  FaBars,
+  FaTimes
 } from "react-icons/fa";
 import { Button } from "@chakra-ui/react";
 import soullogo from '../img/soulflexlogo.png';
@@ -90,6 +96,8 @@ export const MainPage = () => {
   const location = useLocation();
   const [currentPage, setCurrentPage] = useState(location.pathname);
   const [menuOpen, setMenuOpen] = useState(false);
+  const { isOpen: isMobileNavOpen, onToggle: onMobileNavToggle } = useDisclosure();
+  const isMobile = useBreakpointValue({ base: true, md: false });
   const { user, logout } = useAuth();
   const aboutUsRef = useRef(null);
   const featuresRef = useRef(null);
@@ -149,8 +157,6 @@ export const MainPage = () => {
       ))}
 
       {/* Header Section */}
-      {/* Header Section */}
-{/* Header Section */}
 <MotionBox
   position="fixed"
   top={0}
@@ -158,7 +164,7 @@ export const MainPage = () => {
   right={0}
   bg={colorMode === "light" ? "black" : "gray.800"}
   color="white"
-  p={4}
+  p={{ base: 2, md: 4 }}
   boxShadow="lg"
   zIndex={999}
   initial={{ y: -60 }}
@@ -166,17 +172,26 @@ export const MainPage = () => {
   transition={{ duration: 1 }}
 >
   <Flex width="100%" justifyContent="space-between" alignItems="center">
-    <Heading as="h3" size="md" fontFamily="serif">
+    <Heading 
+      as="h3" 
+      fontSize={{ base: "13px", sm: "16px", md: "20px" }} 
+      fontFamily="serif" 
+      isTruncated 
+      maxW={{ base: "55%", sm: "65%", md: "100%" }}
+      pr={2}
+    >
       Hello User..!Glad you find us 😊
     </Heading>
-    <HStack spacing={8} alignItems="center">
+
+    {/* Desktop Navigation */}
+    <HStack spacing={8} alignItems="center" display={{ base: "none", md: "flex" }}>
       <Link
         fontSize="lg"
         fontWeight="bold"
         color={currentPage === "/" ? "teal.500" : "white"}
         _hover={{ color: "teal.300" }}
         _activeLink={activeLinkStyles}
-        onClick={() => window.location.reload()} // Refresh the page on click
+        onClick={() => window.location.reload()}
       >
         Home
       </Link>
@@ -205,13 +220,13 @@ export const MainPage = () => {
         size="md"
         onClick={toggleColorMode}
         aria-label="Toggle Dark Mode"
-        bg={colorMode === "light" ? "gray.200" : "gray.700"} // Background color for better contrast
-        color={colorMode === "light" ? "black" : "white.300"} // Icon color to ensure visibility
+        bg={colorMode === "light" ? "gray.200" : "gray.700"}
+        color={colorMode === "light" ? "black" : "white.300"}
         _hover={{
-          bg: colorMode === "light" ? "gray.300" : "gray.600", // Slightly darker on hover
+          bg: colorMode === "light" ? "gray.300" : "gray.600",
         }}
         _active={{
-          bg: colorMode === "light" ? "gray.400" : "gray.100", // Slightly darker when active
+          bg: colorMode === "light" ? "gray.400" : "gray.100",
         }}
       />
       <Menu>
@@ -235,10 +250,9 @@ export const MainPage = () => {
               {user?.name || "User"}
             </Text>
           </Flex>
-
           <MenuItem
-            _hover={{ bg: "gray.300" }} // Change bg color on hover
-            bg={colorMode === "light" ? "white" : "gray.700"} // Ensure default bg is white or dark based on color mode
+            _hover={{ bg: "gray.300" }}
+            bg={colorMode === "light" ? "white" : "gray.700"}
           >
             <Flex alignItems="center">
               <FaFire size={20} />
@@ -248,10 +262,9 @@ export const MainPage = () => {
               </Box>
             </Flex>
           </MenuItem>
-
           <MenuItem
-            _hover={{ bg: "gray.300" }} // Change bg color on hover
-            bg={colorMode === "light" ? "white" : "gray.700"} // Ensure default bg is white or dark based on color mode
+            _hover={{ bg: "gray.300" }}
+            bg={colorMode === "light" ? "white" : "gray.700"}
             onClick={logout}
           >
             Log Out
@@ -259,7 +272,115 @@ export const MainPage = () => {
         </MenuList>
       </Menu>
     </HStack>
+
+    {/* Mobile Hamburger + Icons */}
+    <HStack spacing={2} display={{ base: "flex", md: "none" }}>
+      <IconButton
+        icon={colorMode === "light" ? <FaMoon /> : <FaSun />}
+        isRound
+        size="sm"
+        onClick={toggleColorMode}
+        aria-label="Toggle Dark Mode"
+        bg={colorMode === "light" ? "gray.200" : "gray.700"}
+        color={colorMode === "light" ? "black" : "white.300"}
+      />
+      <Menu>
+        <MenuButton
+          as={IconButton}
+          icon={<FaUser />}
+          isRound
+          size="sm"
+          color={colorMode === "dark" ? "black.500" : "blackAlpha.900"}
+          aria-label="Profile"
+        />
+        <MenuList
+          bg={colorMode === "light" ? "white" : "gray.700"}
+          color={colorMode === "light" ? "gray.800" : "white"}
+          border="none"
+        >
+          <Flex alignItems="center" p={4}>
+            <FaUser size={24} />
+            <Text ml={3} fontWeight="bold">
+              {user?.name || "User"}
+            </Text>
+          </Flex>
+          <MenuItem
+            _hover={{ bg: "gray.300" }}
+            bg={colorMode === "light" ? "white" : "gray.700"}
+          >
+            <Flex alignItems="center">
+              <FaFire size={20} />
+              <Box ml={2}>
+                <Text fontWeight="bold">Streak</Text>
+                <Text fontSize="sm">0</Text>
+              </Box>
+            </Flex>
+          </MenuItem>
+          <MenuItem
+            _hover={{ bg: "gray.300" }}
+            bg={colorMode === "light" ? "white" : "gray.700"}
+            onClick={logout}
+          >
+            Log Out
+          </MenuItem>
+        </MenuList>
+      </Menu>
+      <IconButton
+        icon={isMobileNavOpen ? <FaTimes /> : <FaBars />}
+        size="sm"
+        onClick={onMobileNavToggle}
+        aria-label="Toggle Navigation"
+        variant="ghost"
+        color="white"
+        _hover={{ bg: "whiteAlpha.200" }}
+      />
+    </HStack>
   </Flex>
+
+  {/* Mobile Nav Dropdown */}
+  <Collapse in={isMobileNavOpen} animateOpacity>
+    <VStack
+      display={{ base: "flex", md: "none" }}
+      spacing={3}
+      pt={4}
+      pb={2}
+      align="stretch"
+    >
+      <Link
+        fontSize="md"
+        fontWeight="bold"
+        color={currentPage === "/" ? "teal.300" : "white"}
+        _hover={{ color: "teal.300" }}
+        onClick={() => { window.location.reload(); onMobileNavToggle(); }}
+        px={2}
+        py={1}
+      >
+        Home
+      </Link>
+      <Link
+        onClick={() => { handleScrollToFeatures(); onMobileNavToggle(); }}
+        fontSize="md"
+        fontWeight="bold"
+        color="white"
+        _hover={{ color: "teal.300" }}
+        px={2}
+        py={1}
+      >
+        Features
+      </Link>
+      <Link
+        onClick={() => { handleScrollToAboutUs(); onMobileNavToggle(); }}
+        fontSize="md"
+        fontWeight="bold"
+        color="white"
+        _hover={{ color: "teal.300" }}
+        px={2}
+        py={1}
+      >
+        About Us
+      </Link>
+    </VStack>
+  </Collapse>
 </MotionBox>
 
 
@@ -267,7 +388,7 @@ export const MainPage = () => {
          <Box
         width="100%"
         textAlign="center"
-        mt="125px" // Adjust based on the header height
+        mt={{ base: "80px", md: "125px" }} // Adjust based on the header height
         mb={2}
         bg={colorMode === "light" ? "transparent.50" : "transparent.900"}
         p={2}
@@ -821,7 +942,7 @@ export const MainPage = () => {
     >
       <FaBrain size={40} color="teal.500" />
       <Heading as="h4" size="md" mt={4} mb={2}>
-        Name-1
+        santosh
         <br />
       </Heading>
       <Text>
@@ -841,7 +962,7 @@ export const MainPage = () => {
     >
       <FaBullseye size={40} color="teal.500" />
       <Heading as="h4" size="md" mt={4} mb={2}>
-        Name-2
+        santosh
         <br/>
       </Heading>
       <Text>
@@ -861,7 +982,7 @@ export const MainPage = () => {
     >
       <FaHeart size={40} color="teal.500" />
       <Heading as="h4" size="md" mt={4} mb={2}>
-        Name-3
+        santosh
         <br />
       </Heading>
       <Text>
@@ -881,7 +1002,7 @@ export const MainPage = () => {
     >
       <FaCode size={40} color="teal.500" />
       <Heading as="h4" size="md" mt={4} mb={2}>
-        Name-4
+        santosh
         <br />
       </Heading>
       <Text>
@@ -901,7 +1022,7 @@ export const MainPage = () => {
     >
       <FaLaptopCode size={40} color="teal.500" />
       <Heading as="h4" size="md" mt={4} mb={2}>
-        Name-5
+        santosh
         <br />
       </Heading>
       <Text>
@@ -978,36 +1099,37 @@ export const MainPage = () => {
           
           <IconButton
             as={Link}
-            href="mailto:ktejaswi12234@gmail.com"
+            href="mailto:santoshkumarkowru@gmail.com"
             icon={<FaEnvelope />}
             isRound
             size="lg"
             m={2}
             colorScheme="teal"
             aria-label="Email"
+            isExternal
           />
           <IconButton
             as={Link}
-            href="https://www.instagram.com/tejaswi_2326?igsh=enNvZWhhMjh5NDhr"
+            href="https://www.instagram.com/santhuu_ysrcp?igsh=b3pnZHhlNTMzcWFm"
             icon={<FaInstagram />}
             isRound
             size="lg"
             m={2}
             colorScheme="pink"
             aria-label="Instagram"
+            isExternal
           />
           <IconButton
             as={Link}
-            href="https://wa.me/7207257688"
+            href="https://wa.me/919705635139"
             icon={<FaWhatsapp />}
             isRound
             size="lg"
             m={2}
             colorScheme="teal"
             aria-label="WhatsApp"
+            isExternal
           />
-          
-          
         </Flex>
         <Text fontSize="sm">
           &copy; {new Date().getFullYear()} Soul Flex. All rights reserved.
