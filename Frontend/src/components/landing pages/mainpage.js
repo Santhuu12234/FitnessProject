@@ -250,18 +250,7 @@ export const MainPage = () => {
               {user?.name || "User"}
             </Text>
           </Flex>
-          <MenuItem
-            _hover={{ bg: "gray.300" }}
-            bg={colorMode === "light" ? "white" : "gray.700"}
-          >
-            <Flex alignItems="center">
-              <FaFire size={20} />
-              <Box ml={2}>
-                <Text fontWeight="bold">Streak</Text>
-                <Text fontSize="sm">0</Text>
-              </Box>
-            </Flex>
-          </MenuItem>
+
           <MenuItem
             _hover={{ bg: "gray.300" }}
             bg={colorMode === "light" ? "white" : "gray.700"}
@@ -304,18 +293,7 @@ export const MainPage = () => {
               {user?.name || "User"}
             </Text>
           </Flex>
-          <MenuItem
-            _hover={{ bg: "gray.300" }}
-            bg={colorMode === "light" ? "white" : "gray.700"}
-          >
-            <Flex alignItems="center">
-              <FaFire size={20} />
-              <Box ml={2}>
-                <Text fontWeight="bold">Streak</Text>
-                <Text fontSize="sm">0</Text>
-              </Box>
-            </Flex>
-          </MenuItem>
+
           <MenuItem
             _hover={{ bg: "gray.300" }}
             bg={colorMode === "light" ? "white" : "gray.700"}
