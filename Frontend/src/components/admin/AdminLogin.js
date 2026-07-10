@@ -16,11 +16,7 @@ import {
     Flex,
     IconButton,
     useColorModeValue,
-    Alert,
-    AlertIcon,
-    AlertTitle,
-    AlertDescription,
-    CloseButton
+    useToast
 } from "@chakra-ui/react";
 import { useNavigate, Link as RouterLink } from "react-router-dom";
 import axios from "axios";
@@ -34,11 +30,11 @@ const MotionButton = motion(ChakraButton);
 export const AdminLogin = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    const [status, setStatus] = useState({ type: "", message: "" });
     const [isLoading, setIsLoading] = useState(false);
 
     const passwordRef = useRef(null);
     const navigate = useNavigate();
+    const toast = useToast();
 
     const bg = useColorModeValue("gray.300", "gray.700");
     const cardBg = useColorModeValue("white", "gray.800");
@@ -49,31 +45,49 @@ export const AdminLogin = () => {
     const handleLogin = async (e) => {
         e.preventDefault();
         if (!email || !password) {
-            setStatus({ type: "error", message: "Please fill in all fields." });
+            toast({
+                title: "Missing Fields",
+                description: "Please enter email and password.",
+                status: "warning",
+                duration: 3000,
+                isClosable: true,
+                position: "top"
+            });
             return;
         }
-
         setIsLoading(true);
-        setStatus({ type: "", message: "" });
-
         try {
-            console.log("Sending admin sign-in request:", { email, password });
             const res = await axios.post(`${api}/signin`, { email, password });
-            console.log("Server response:", res.data);
-
             if (res.data.message === "Sign-in successful" && res.data.userType === "Admin") {
-                setStatus({ type: "success", message: "Successfully logged in as Admin! Redirecting..." });
                 localStorage.setItem("isAdmin", "true");
-                setTimeout(() => {
-                    navigate("/admin");
-                }, 1500);
+                toast({
+                    title: "Access Granted",
+                    description: "Successfully logged in as Administrator.",
+                    status: "success",
+                    duration: 2000,
+                    isClosable: true,
+                    position: "top"
+                });
+                setTimeout(() => navigate("/admin"), 1200);
             } else {
-                setStatus({ type: "error", message: "Access denied. Only administrators are permitted." });
+                toast({
+                    title: "Access Denied",
+                    description: "Only administrators are permitted to use this portal.",
+                    status: "error",
+                    duration: 3000,
+                    isClosable: true,
+                    position: "top"
+                });
             }
         } catch (error) {
-            console.error("Admin signin error:", error);
-            const errMsg = error.response?.data?.error || "Invalid administrator credentials.";
-            setStatus({ type: "error", message: errMsg });
+            toast({
+                title: "Login Failed",
+                description: error.response?.data?.error || "Invalid administrator credentials.",
+                status: "error",
+                duration: 3000,
+                isClosable: true,
+                position: "top"
+            });
         } finally {
             setIsLoading(false);
         }
@@ -81,37 +95,41 @@ export const AdminLogin = () => {
 
     const handleEmailKeyPress = (e) => {
         if (e.key === "Enter") {
-            passwordRef.current.focus();
+            passwordRef.current?.focus();
         }
     };
 
-    const handleBackClick = () => {
-        navigate("/landing");
+    const handlePasswordKeyPress = (e) => {
+        if (e.key === "Enter") {
+            handleLogin(e);
+        }
     };
 
     return (
         <Flex
-            height="100vh"
+            minHeight="100vh"
             bg={bg}
             alignItems="center"
             justifyContent="center"
+            p={4}
         >
             <Flex
-                width="67%"
-                maxWidth="1200px"
+                width={{ base: "100%", sm: "90%", md: "80%", lg: "70%" }}
+                maxWidth="1100px"
                 boxShadow="xl"
-                borderRadius="lg"
+                borderRadius="xl"
                 overflow="hidden"
-                bg="white"
+                direction={{ base: "column", md: "row" }}
             >
-                {/* Left Side with Full Image */}
+                {/* Left Side — Branding */}
                 <Box
-                    width="60%"
+                    width={{ base: "100%", md: "50%" }}
+                    minHeight={{ base: "200px", md: "auto" }}
                     bg="black"
                     display="flex"
                     justifyContent="center"
                     alignItems="center"
-                    padding={0}
+                    p={8}
                     as={motion.div}
                     initial={{ x: -200, opacity: 0 }}
                     animate={{ x: 0, opacity: 1 }}
@@ -120,16 +138,17 @@ export const AdminLogin = () => {
                     <Image
                         src={soulflexImage}
                         alt="Soul Flex"
-                        objectFit="cover"
-                        width="70%"
-                        height="45%"
+                        objectFit="contain"
+                        maxW="70%"
+                        maxH="300px"
                     />
                 </Box>
 
-                {/* Right Side with Admin Sign-in Form */}
+                {/* Right Side — Admin Sign-in Form */}
                 <Box
-                    width="60%"
-                    p={8}
+                    width={{ base: "100%", md: "50%" }}
+                    p={{ base: 6, md: 8 }}
+                    bg={cardBg}
                     display="flex"
                     flexDirection="column"
                     justifyContent="center"
@@ -138,8 +157,8 @@ export const AdminLogin = () => {
                     animate={{ x: 0, opacity: 1 }}
                     transition="0.5s ease-in-out"
                 >
-                    <Card boxShadow="md" borderRadius="lg" bg={cardBg}>
-                        <CardBody>
+                    <Card boxShadow="none" borderRadius="lg" bg="transparent">
+                        <CardBody px={0}>
                             <form onSubmit={handleLogin}>
                                 <VStack spacing={4} align="stretch">
                                     {/* Back Button */}
@@ -149,7 +168,7 @@ export const AdminLogin = () => {
                                         variant="outline"
                                         colorScheme="gray"
                                         alignSelf="flex-start"
-                                        onClick={handleBackClick}
+                                        onClick={() => navigate("/landing")}
                                     />
 
                                     <Heading
@@ -158,7 +177,7 @@ export const AdminLogin = () => {
                                         textAlign="center"
                                         color={textColor}
                                         fontFamily="serif"
-                                        mb={2}
+                                        mb={1}
                                     >
                                         Admin Portal
                                     </Heading>
@@ -166,35 +185,12 @@ export const AdminLogin = () => {
                                         fontSize="sm"
                                         textAlign="center"
                                         color={secondaryTextColor}
-                                        mb={4}
+                                        mb={2}
                                     >
-                                        Secure gateway for system operators and database administrators.
+                                        Secure gateway for system operators and administrators.
                                     </Text>
 
-                                    {status.message && (
-                                        <Alert
-                                            status={status.type === "success" ? "success" : "error"}
-                                            borderRadius="lg"
-                                            bg={status.type === "success" ? "green.600" : "red.600"}
-                                            color="white"
-                                            boxShadow="md"
-                                            mb={2}
-                                        >
-                                            <AlertIcon color="white" />
-                                            <Box flex="1">
-                                                <AlertTitle fontSize="sm">{status.type === "success" ? "Success" : "Error"}</AlertTitle>
-                                                <AlertDescription fontSize="xs">{status.message}</AlertDescription>
-                                            </Box>
-                                            <CloseButton
-                                                position="absolute"
-                                                right="8px"
-                                                top="8px"
-                                                onClick={() => setStatus({ type: "", message: "" })}
-                                            />
-                                        </Alert>
-                                    )}
-
-                                    <FormControl id="email">
+                                    <FormControl id="admin-email">
                                         <FormLabel color={textColor}>Admin Email</FormLabel>
                                         <Input
                                             type="email"
@@ -203,12 +199,12 @@ export const AdminLogin = () => {
                                             value={email}
                                             onChange={(e) => setEmail(e.target.value)}
                                             onKeyPress={handleEmailKeyPress}
-                                            bg={useColorModeValue("white", "gray.700")}
+                                            bg={cardBg}
                                             color={textColor}
                                         />
                                     </FormControl>
 
-                                    <FormControl id="password">
+                                    <FormControl id="admin-password">
                                         <FormLabel color={textColor}>Password</FormLabel>
                                         <Input
                                             type="password"
@@ -216,8 +212,9 @@ export const AdminLogin = () => {
                                             focusBorderColor="black"
                                             value={password}
                                             onChange={(e) => setPassword(e.target.value)}
+                                            onKeyPress={handlePasswordKeyPress}
                                             ref={passwordRef}
-                                            bg={useColorModeValue("white", "gray.700")}
+                                            bg={cardBg}
                                             color={textColor}
                                         />
                                     </FormControl>
@@ -228,7 +225,6 @@ export const AdminLogin = () => {
                                         width="100%"
                                         fontSize="sm"
                                         color={secondaryTextColor}
-                                        mb={4}
                                     >
                                         <Checkbox colorScheme="gray">Remember session</Checkbox>
                                         <Link as={RouterLink} to="/forgot-password" color={secondaryTextColor}>
@@ -240,26 +236,28 @@ export const AdminLogin = () => {
                                         bg="black"
                                         color="white"
                                         size="lg"
-                                        mt={4}
+                                        width="100%"
+                                        mt={2}
                                         _hover={{ bg: "gray.800" }}
                                         type="submit"
                                         isLoading={isLoading}
-                                        loadingText="Verifying security..."
-                                        whileHover={{ scale: 1.05 }}
-                                        whileTap={{ scale: 0.95 }}
+                                        loadingText="Verifying credentials..."
+                                        whileHover={{ scale: 1.03 }}
+                                        whileTap={{ scale: 0.97 }}
                                     >
                                         Sign In as Admin
                                     </MotionButton>
 
-                                    <Text textAlign="center" color={secondaryTextColor} fontSize="sm" mt={2}>
+                                    <Text textAlign="center" color={secondaryTextColor} fontSize="sm" mt={1}>
                                         Are you a regular user?{" "}
-                                        <Link
-                                            as={RouterLink}
-                                            to="/signin"
-                                            color={signUpLinkColor}
-                                            fontWeight="bold"
-                                        >
+                                        <Link as={RouterLink} to="/signin" color={signUpLinkColor} fontWeight="bold">
                                             Sign In
+                                        </Link>
+                                    </Text>
+                                    <Text textAlign="center" color={secondaryTextColor} fontSize="sm">
+                                        New here?{" "}
+                                        <Link as={RouterLink} to="/signup" color={signUpLinkColor} fontWeight="bold">
+                                            Sign Up
                                         </Link>
                                     </Text>
                                 </VStack>

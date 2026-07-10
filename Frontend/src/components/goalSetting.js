@@ -21,6 +21,7 @@ import { motion } from "framer-motion";
 import { useState } from "react";
 import axios from "axios";
 import { api } from "./actions/api";
+import { useAuth } from "../context/AuthContext";
 
 const MotionBox = motion(Box);
 const MotionHeading = motion(Heading);
@@ -29,12 +30,13 @@ const GoalSetting = () => {
   const [tasks, setTasks] = useState([]);
   const [newTask, setNewTask] = useState('');
   const [time, setTime] = useState('');
+  const { user } = useAuth();
 
   const handleAddTask = async () => {
     if (newTask.trim() && time) {
       try {
         const response = await axios.post(`${api}/addTask`, {
-          email: 'chegondirithinsurya@gmail.com',  // Replace with the actual user email
+          email: user?.email || 'chegondirithinsurya@gmail.com',  // Replace with the actual user email
           task: { task: newTask, time }
         });
 

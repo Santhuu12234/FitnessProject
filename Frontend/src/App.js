@@ -13,6 +13,7 @@ import AdminDashboard from './components/admin';
 import { AdminLogin } from './components/admin/AdminLogin';
 import VideoPage from './components/videos';
 import ProblemRelief from './components/music/music';
+import ProtectedRoute from './components/ProtectedRoute';
 
 import Aasanas from "./components/exercises/aasanas";
 import ExercisesStage from "./components/exercises/stagemen";
@@ -38,8 +39,8 @@ function App() {
         {/* Set the default route to redirect to /landing */}
         <Route path="/" element={<Navigate to="/landing" replace />} />
         <Route path="/signin" element={<SignIn />} />
-        <Route path="/mainpage" element={<MainPage />} />
-        <Route path="/goal" element={<GoalSettingStrategiesPage />} />
+        <Route path="/mainpage" element={<ProtectedRoute><MainPage /></ProtectedRoute>} />
+        <Route path="/goal" element={<ProtectedRoute><GoalSettingStrategiesPage /></ProtectedRoute>} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/landing" element={<LandingPage />} />
         <Route path="/admin" element={<AdminDashboard />} />

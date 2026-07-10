@@ -1,4 +1,3 @@
-
 import {
     Card,
     CardBody,
@@ -15,7 +14,8 @@ import {
     Image,
     Flex,
     IconButton,
-    useColorModeValue
+    useColorModeValue,
+    useToast
 } from "@chakra-ui/react";
 import axios from 'axios';
 import { api } from "../actions/api";
@@ -24,83 +24,122 @@ import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import { motion } from "framer-motion";
 import { ArrowBackIcon } from "@chakra-ui/icons";
 import soulflexImage from '../img/soulflex.png';
+import { useAuth } from "../../context/AuthContext";
 
 const MotionButton = motion(ChakraButton);
 
 export const SignIn = () => {
     const [name, setName] = useState("");
     const [password, setPassword] = useState("");
+    const [isLoading, setIsLoading] = useState(false);
     const passwordRef = useRef(null);
     const navigate = useNavigate();
+    const toast = useToast();
+    const { login } = useAuth();
 
-    // Move useColorModeValue calls inside the component
     const bg = useColorModeValue("gray.300", "gray.700");
     const cardBg = useColorModeValue("white", "gray.800");
     const textColor = useColorModeValue("gray.800", "white");
     const secondaryTextColor = useColorModeValue("gray.500", "gray.300");
-    const signUpLinkColor = useColorModeValue("black", "white"); // Color for "Sign up" link
-    const Signin = async () => {
-        try {
-            console.log("Sending sign-in request:", { email: name, password });
-            const res = await axios.post(api + "/signin", { email: name, password });
-            console.log("Server response:", res.data);
+    const signUpLinkColor = useColorModeValue("black", "white");
 
+    const Signin = async () => {
+        if (!name || !password) {
+            toast({
+                title: "Missing Fields",
+                description: "Please enter your email and password.",
+                status: "warning",
+                duration: 3000,
+                isClosable: true,
+                position: "top"
+            });
+            return;
+        }
+        setIsLoading(true);
+        try {
+            const res = await axios.post(api + "/signin", { email: name, password });
             if (res.data.message === "Sign-in successful") {
-                alert("Sign-in successful");
+                // Store user data in auth context
+                login({
+                    name: res.data.userName || name.split('@')[0],
+                    email: name,
+                    userType: res.data.userType || "User"
+                });
+
+                toast({
+                    title: "Welcome Back!",
+                    description: "Sign-in successful.",
+                    status: "success",
+                    duration: 2000,
+                    isClosable: true,
+                    position: "top"
+                });
                 if (res.data.userType === "Admin") {
                     navigate("/admin");
                 } else {
                     navigate("/mainpage");
                 }
             } else {
-                alert(res.data.error || "Unexpected error");
+                toast({
+                    title: "Sign-in Failed",
+                    description: res.data.error || "Unexpected error occurred.",
+                    status: "error",
+                    duration: 3000,
+                    isClosable: true,
+                    position: "top"
+                });
             }
         } catch (error) {
-            console.error("Sign-in error:", error.response ? error.response.data : error.message);
-            alert("Sign-in failed. Please try again.");
+            toast({
+                title: "Sign-in Failed",
+                description: error.response?.data?.error || "Unable to connect. Please try again.",
+                status: "error",
+                duration: 3000,
+                isClosable: true,
+                position: "top"
+            });
+        } finally {
+            setIsLoading(false);
         }
     };
-
-
-
-
-
-
-
 
     const handleEmailKeyPress = (e) => {
         if (e.key === "Enter") {
-            passwordRef.current.focus();
+            passwordRef.current?.focus();
         }
     };
 
-    const handleBackClick = () => {
-        navigate("/landing");
+    const handlePasswordKeyPress = (e) => {
+        if (e.key === "Enter") {
+            Signin();
+        }
     };
 
     return (
         <Flex
-            height="100vh"
+            minHeight="100vh"
             bg={bg}
             alignItems="center"
             justifyContent="center"
+            p={4}
         >
             <Flex
-                width="67%"
-                maxWidth="1200px"
+                width={{ base: "100%", sm: "90%", md: "80%", lg: "70%" }}
+                maxWidth="1100px"
                 boxShadow="xl"
-                borderRadius="lg"
+                borderRadius="xl"
                 overflow="hidden"
-                bg="white"
+                direction={{ base: "column", md: "row" }}
             >
-                {/* Left Side with Full Image */}
+                {/* Left Side — Branding */}
                 <Box
-                    width="60%"
+                    width={{ base: "100%", md: "50%" }}
+                    minHeight={{ base: "200px", md: "auto" }}
                     bg="black"
                     display="flex"
                     justifyContent="center"
                     alignItems="center"
-                    padding={0}
+                    p={8}
                     as={motion.div}
                     initial={{ x: -200, opacity: 0 }}
                     animate={{ x: 0, opacity: 1 }}
@@ -109,16 +148,17 @@ export const SignIn = () => {
                     <Image
                         src={soulflexImage}
                         alt="Soul Flex"
-                        objectFit="cover"
-                        width="70%"
-                        height="45%"
+                        objectFit="contain"
+                        maxW="70%"
+                        maxH="300px"
                     />
                 </Box>
 
-                {/* Right Side with Sign-in Form */}
+                {/* Right Side — Sign-in Form */}
                 <Box
-                    width="60%"
-                    p={8}
+                    width={{ base: "100%", md: "50%" }}
+                    p={{ base: 6, md: 8 }}
+                    bg={cardBg}
                     display="flex"
                     flexDirection="column"
                     justifyContent="center"
@@ -127,8 +167,8 @@ export const SignIn = () => {
                     animate={{ x: 0, opacity: 1 }}
                     transition="0.5s ease-in-out"
                 >
-                    <Card boxShadow="md" borderRadius="lg" bg={cardBg}>
-                        <CardBody>
+                    <Card boxShadow="none" borderRadius="lg" bg="transparent">
+                        <CardBody px={0}>
                             <VStack spacing={4} align="stretch">
                                 {/* Back Button */}
                                 <IconButton
@@ -137,7 +177,7 @@ export const SignIn = () => {
                                     variant="outline"
                                     colorScheme="gray"
                                     alignSelf="flex-start"
-                                    onClick={handleBackClick}
+                                    onClick={() => navigate("/landing")}
                                 />
 
                                 <Heading
@@ -146,10 +186,7 @@ export const SignIn = () => {
                                     textAlign="center"
                                     color={textColor}
                                     fontFamily="serif"
-                                    mb={4}
-                                    initial={{ scale: 0.8, opacity: 0 }}
-                                    animate={{ scale: 1, opacity: 1 }}
-                                    transition="0.5s ease-in-out"
+                                    mb={1}
                                 >
                                     Welcome back to Soul Flex!
                                 </Heading>
@@ -157,30 +194,35 @@ export const SignIn = () => {
                                     fontSize="sm"
                                     textAlign="center"
                                     color={secondaryTextColor}
-                                    mb={4}
+                                    mb={2}
                                 >
                                     The faster you fill up, the faster you get a chance to change your life!
                                 </Text>
 
                                 <FormControl id="email">
-                                    <FormLabel>Email</FormLabel>
+                                    <FormLabel color={textColor}>Email</FormLabel>
                                     <Input
                                         type="email"
                                         placeholder="Enter your email"
                                         focusBorderColor="black"
                                         onChange={(e) => setName(e.target.value)}
                                         onKeyPress={handleEmailKeyPress}
+                                        bg={cardBg}
+                                        color={textColor}
                                     />
                                 </FormControl>
 
                                 <FormControl id="password">
-                                    <FormLabel>Password</FormLabel>
+                                    <FormLabel color={textColor}>Password</FormLabel>
                                     <Input
                                         type="password"
                                         placeholder="Enter your password"
                                         focusBorderColor="black"
                                         onChange={(e) => setPassword(e.target.value)}
+                                        onKeyPress={handlePasswordKeyPress}
                                         ref={passwordRef}
+                                        bg={cardBg}
+                                        color={textColor}
                                     />
                                 </FormControl>
 
@@ -190,7 +232,6 @@ export const SignIn = () => {
                                     width="100%"
                                     fontSize="sm"
                                     color={secondaryTextColor}
-                                    mb={4}
                                 >
                                     <Checkbox colorScheme="gray">Remember me</Checkbox>
                                     <Link as={RouterLink} to="/forgot-password" color={secondaryTextColor}>
@@ -202,50 +243,28 @@ export const SignIn = () => {
                                     bg="black"
                                     color="white"
                                     size="lg"
-                                    mt={4}
+                                    width="100%"
+                                    mt={2}
                                     _hover={{ bg: "gray.800" }}
                                     onClick={Signin}
-                                    whileHover={{ scale: 1.05 }}
-                                    whileTap={{ scale: 0.95 }}
-                                > <Link as={RouterLink} to="/mainpage" color={secondaryTextColor}>
-
-                                    </Link>
+                                    isLoading={isLoading}
+                                    loadingText="Signing in..."
+                                    whileHover={{ scale: 1.03 }}
+                                    whileTap={{ scale: 0.97 }}
+                                >
                                     Sign In
                                 </MotionButton>
 
-                                {/* <MotionButton 
-                                    variant="outline" 
-                                    colorScheme="gray" 
-                                    size="md" 
-                                    width="100%" 
-                                    mt={2} 
-                                    leftIcon={<img src="https://img.icons8.com/color/16/000000/google-logo.png" alt="Google logo" />} 
-                                    whileHover={{ scale: 1.05 }}
-                                    whileTap={{ scale: 0.95 }}
-                                >
-                                    Sign In with Google
-                                </MotionButton> */}
-
-                                <Text textAlign="center" color={secondaryTextColor} fontSize="sm" mt={2}>
+                                <Text textAlign="center" color={secondaryTextColor} fontSize="sm" mt={1}>
                                     Don't have an account?{" "}
-                                    <Link
-                                        as={RouterLink}
-                                        to="/signup"
-                                        color={signUpLinkColor}
-                                        fontWeight="bold"
-                                    >
+                                    <Link as={RouterLink} to="/signup" color={signUpLinkColor} fontWeight="bold">
                                         Sign up
                                     </Link>
                                 </Text>
 
-                                <Text textAlign="center" color={secondaryTextColor} fontSize="sm" mt={1}>
+                                <Text textAlign="center" color={secondaryTextColor} fontSize="sm">
                                     Are you an administrator?{" "}
-                                    <Link
-                                        as={RouterLink}
-                                        to="/adminlogin"
-                                        color={signUpLinkColor}
-                                        fontWeight="bold"
-                                    >
+                                    <Link as={RouterLink} to="/adminlogin" color={signUpLinkColor} fontWeight="bold">
                                         Admin Login
                                     </Link>
                                 </Text>

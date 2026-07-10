@@ -91,17 +91,18 @@ const scheduleReminder = (email) => {
 
 // ✅ Fix: Declare signedInUserEmail properly before using it
 app.post('/addTask', async (req, res) => {
-    const { task } = req.body;
+    const { task, email } = req.body;
+    const targetEmail = email || signedInUserEmail;
 
-    // Fix: Ensure signedInUserEmail is not empty
-    if (!signedInUserEmail || !task || !task.task || !task.time) {
+    // Fix: Ensure targetEmail is not empty
+    if (!targetEmail || !task || !task.task || !task.time) {
         return res.status(400).json({ message: 'Invalid data' });
     }
 
     try {
         // Insert task into database
         const result = await db.collection('tasks').insertOne({
-            email: signedInUserEmail,
+            email: targetEmail,
             task: task.task,
             time: task.time
         });
@@ -109,7 +110,7 @@ app.post('/addTask', async (req, res) => {
         console.log('Task inserted:', result);
 
         // Schedule Reminder Email
-        scheduleReminder(signedInUserEmail);
+        scheduleReminder(targetEmail);
 
         res.status(200).json({
             message: 'Task added successfully and reminder email scheduled.',
@@ -164,11 +165,9 @@ app.post('/signin', async (req, res) => {
     try {
         const { email, password } = req.body;
 
-        let user;
-        if (email === "santosh@gmail.com" && password === "santosh") {
+        let user = await db.collection("admin").findOne({ email }) || await db.collection("ast").findOne({ email });
+        if (!user && email === "santosh@gmail.com" && password === "santosh") {
             user = { name: "Santosh", email: "santosh@gmail.com", password: "santosh", role: "Admin" };
-        } else {
-            user = await db.collection("ast").findOne({ email }) || await db.collection("admin").findOne({ email });
         }
 
         if (user) {
@@ -266,8 +265,11 @@ app.post('/send-otp', async (req, res) => {
             return res.status(400).json({ error: "Email is required" });
         }
 
-        // Check if user exists in ast collection
-        const user = await db.collection("ast").findOne({ email });
+        // Check if user exists in ast, admin, or fallback check for santosh@gmail.com
+        const user = await db.collection("ast").findOne({ email }) || 
+                     await db.collection("admin").findOne({ email }) ||
+                     (email === "santosh@gmail.com" ? { email: "santosh@gmail.com" } : null);
+
         if (!user) {
             return res.status(404).json({ error: "User with this email is not registered." });
         }
@@ -349,13 +351,28 @@ app.put('/reset-password', async (req, res) => {
             return res.status(400).json({ error: "Please verify OTP before resetting password" });
         }
 
-        // Update password in db
-        const result = await db.collection("ast").updateOne(
+        // Update password in db (try ast first, then admin, or insert if default admin)
+        let result = await db.collection("ast").updateOne(
             { email },
             { $set: { password: newPassword } }
         );
 
         if (result.matchedCount === 0) {
+            result = await db.collection("admin").updateOne(
+                { email },
+                { $set: { password: newPassword } }
+            );
+        }
+
+        if (result.matchedCount === 0 && email === "santosh@gmail.com") {
+            // Seed default admin with the new password
+            await db.collection("admin").insertOne({
+                name: "Santosh",
+                email: "santosh@gmail.com",
+                password: newPassword,
+                role: "Admin"
+            });
+        } else if (result.matchedCount === 0) {
             return res.status(404).json({ error: "User not found" });
         }
 

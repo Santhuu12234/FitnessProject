@@ -5,6 +5,7 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 import { ChakraProvider } from '@chakra-ui/react';
 import { GoogleOAuthProvider } from '@react-oauth/google';
+import { AuthProvider } from './context/AuthContext';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 
@@ -16,7 +17,9 @@ root.render(
   <React.StrictMode>
     <ChakraProvider>
       <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
-        <App />
+        <AuthProvider>
+          <App />
+        </AuthProvider>
       </GoogleOAuthProvider>
     </ChakraProvider>
   </React.StrictMode>

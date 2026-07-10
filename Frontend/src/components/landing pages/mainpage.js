@@ -20,6 +20,7 @@ import {
 } from "@chakra-ui/react";
 import { motion } from "framer-motion";
 import { Link as RouterLink, useLocation } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
 import {
   FaPlay,
   FaFileAlt,
@@ -89,6 +90,7 @@ export const MainPage = () => {
   const location = useLocation();
   const [currentPage, setCurrentPage] = useState(location.pathname);
   const [menuOpen, setMenuOpen] = useState(false);
+  const { user, logout } = useAuth();
   const aboutUsRef = useRef(null);
   const featuresRef = useRef(null);
 
@@ -230,7 +232,7 @@ export const MainPage = () => {
           <Flex alignItems="center" p={4}>
             <FaUser size={24} />
             <Text ml={3} fontWeight="bold">
-              Username
+              {user?.name || "User"}
             </Text>
           </Flex>
 
@@ -250,9 +252,9 @@ export const MainPage = () => {
           <MenuItem
             _hover={{ bg: "gray.300" }} // Change bg color on hover
             bg={colorMode === "light" ? "white" : "gray.700"} // Ensure default bg is white or dark based on color mode
+            onClick={logout}
           >
             Log Out
-            
           </MenuItem>
         </MenuList>
       </Menu>
