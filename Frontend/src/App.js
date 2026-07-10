@@ -14,6 +14,7 @@ import { AdminLogin } from './components/admin/AdminLogin';
 import VideoPage from './components/videos';
 import ProblemRelief from './components/music/music';
 import ProtectedRoute from './components/ProtectedRoute';
+import NavbarLayout from './components/NavbarLayout';
 
 import Aasanas from "./components/exercises/aasanas";
 import ExercisesStage from "./components/exercises/stagemen";
@@ -39,35 +40,36 @@ function App() {
         {/* Set the default route to redirect to /landing */}
         <Route path="/" element={<Navigate to="/landing" replace />} />
         <Route path="/signin" element={<SignIn />} />
-        <Route path="/mainpage" element={<ProtectedRoute><MainPage /></ProtectedRoute>} />
-        <Route path="/goal" element={<ProtectedRoute><GoalSettingStrategiesPage /></ProtectedRoute>} />
-        <Route path="/contact" element={<Contact />} />
-        <Route path="/landing" element={<LandingPage />} />
-        <Route path="/admin" element={<AdminDashboard />} />
-        <Route path="/adminlogin" element={<AdminLogin />} />
         <Route path="/signup" element={<SignUp />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
-        <Route path="/data" element={<DisplayData />} />
-        <Route path="/articles" element={<Articles />} />
-        <Route path="/contact" element={<Contact />} />
-        <Route path="/video" element={<VideoPage />} />
-        <Route path="/music" element={<ProblemRelief />} />
-        <Route path="/exercises" element={<ExercisePage />} />
-        <Route path="/menadv" element={<Menadv />} />
-        <Route path="/womenadv" element={<Womenadv />} />
-        <Route path="/query" element={<QueryPage />} />
-        <Route path="/aasanas" element={<Aasanas />} />
-        <Route path="/stagem" element={<ExercisesStage />} />
-        <Route path="/womeninter" element={<Womeninter />} />
-        <Route path="/womenbeg" element={<Womenbeg />} />
-        <Route path="/menbeg" element={<Menbeg />} />
-        <Route path="/meninter" element={<Meninter />} />
-        <Route path="/stagef" element={<ExercisesStages />} />
-        <Route path="/querywomen" element={<QueryPages />} />
-        <Route path="/mind" element={<MindfulnessPage />} />
-        <Route path="/suryanamaskaram" element={<Surya />} />
+        <Route path="/adminlogin" element={<AdminLogin />} />
+        <Route path="/admin" element={<AdminDashboard />} />
 
-
+        {/* User-facing routes wrapped with NavbarLayout */}
+        <Route element={<NavbarLayout />}>
+          <Route path="/landing" element={<LandingPage />} />
+          <Route path="/mainpage" element={<ProtectedRoute><MainPage /></ProtectedRoute>} />
+          <Route path="/goal" element={<ProtectedRoute><GoalSettingStrategiesPage /></ProtectedRoute>} />
+          <Route path="/contact" element={<Contact />} />
+          <Route path="/data" element={<DisplayData />} />
+          <Route path="/articles" element={<Articles />} />
+          <Route path="/video" element={<VideoPage />} />
+          <Route path="/music" element={<ProblemRelief />} />
+          <Route path="/exercises" element={<ExercisePage />} />
+          <Route path="/menadv" element={<Menadv />} />
+          <Route path="/womenadv" element={<Womenadv />} />
+          <Route path="/query" element={<QueryPage />} />
+          <Route path="/aasanas" element={<Aasanas />} />
+          <Route path="/stagem" element={<ExercisesStage />} />
+          <Route path="/womeninter" element={<Womeninter />} />
+          <Route path="/womenbeg" element={<Womenbeg />} />
+          <Route path="/menbeg" element={<Menbeg />} />
+          <Route path="/meninter" element={<Meninter />} />
+          <Route path="/stagef" element={<ExercisesStages />} />
+          <Route path="/querywomen" element={<QueryPages />} />
+          <Route path="/mind" element={<MindfulnessPage />} />
+          <Route path="/suryanamaskaram" element={<Surya />} />
+        </Route>
       </Routes>
     </BrowserRouter>
   );

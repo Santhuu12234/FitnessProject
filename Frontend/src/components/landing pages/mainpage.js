@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import {
   Box,
   Flex,
@@ -102,6 +102,18 @@ export const MainPage = () => {
   const aboutUsRef = useRef(null);
   const featuresRef = useRef(null);
 
+  useEffect(() => {
+    if (location.hash === "#features") {
+      setTimeout(() => {
+        featuresRef.current?.scrollIntoView({ behavior: "smooth" });
+      }, 100);
+    } else if (location.hash === "#about-us") {
+      setTimeout(() => {
+        aboutUsRef.current?.scrollIntoView({ behavior: "smooth" });
+      }, 100);
+    }
+  }, [location.hash]);
+
   const handleLinkClick = (path) => {
     if (path === "/") {
       setCurrentPage(path);
@@ -156,217 +168,11 @@ export const MainPage = () => {
         />
       ))}
 
-      {/* Header Section */}
-<MotionBox
-  position="fixed"
-  top={0}
-  left={0}
-  right={0}
-  bg={colorMode === "light" ? "black" : "gray.800"}
-  color="white"
-  p={{ base: 2, md: 4 }}
-  boxShadow="lg"
-  zIndex={999}
-  initial={{ y: -60 }}
-  animate={{ y: 0 }}
-  transition={{ duration: 1 }}
->
-  <Flex width="100%" justifyContent="space-between" alignItems="center">
-    <Heading 
-      as="h3" 
-      fontSize={{ base: "13px", sm: "16px", md: "20px" }} 
-      fontFamily="serif" 
-      isTruncated 
-      maxW={{ base: "55%", sm: "65%", md: "100%" }}
-      pr={2}
-    >
-      Hello User..!Glad you find us 😊
-    </Heading>
-
-    {/* Desktop Navigation */}
-    <HStack spacing={8} alignItems="center" display={{ base: "none", md: "flex" }}>
-      <Link
-        fontSize="lg"
-        fontWeight="bold"
-        color={currentPage === "/" ? "teal.500" : "white"}
-        _hover={{ color: "teal.300" }}
-        _activeLink={activeLinkStyles}
-        onClick={() => window.location.reload()}
-      >
-        Home
-      </Link>
-      <Link
-        onClick={handleScrollToFeatures}
-        fontSize="lg"
-        fontWeight="bold"
-        color={location.pathname === "/features" ? "teal.500" : "white"}
-        _hover={{ color: "teal.300" }}
-        _activeLink={activeLinkStyles}
-      >
-        Features
-      </Link>
-      <Link
-        onClick={handleScrollToAboutUs}
-        fontSize="lg"
-        fontWeight="bold"
-        color={location.pathname === "/about-us" ? "teal.500" : "white"}
-        _hover={{ color: "teal.300" }}
-      >
-        About Us
-      </Link>
-      <IconButton
-        icon={colorMode === "light" ? <FaMoon /> : <FaSun />}
-        isRound
-        size="md"
-        onClick={toggleColorMode}
-        aria-label="Toggle Dark Mode"
-        bg={colorMode === "light" ? "gray.200" : "gray.700"}
-        color={colorMode === "light" ? "black" : "white.300"}
-        _hover={{
-          bg: colorMode === "light" ? "gray.300" : "gray.600",
-        }}
-        _active={{
-          bg: colorMode === "light" ? "gray.400" : "gray.100",
-        }}
-      />
-      <Menu>
-        <MenuButton
-          as={IconButton}
-          icon={<FaUser />}
-          isRound
-          size="md"
-          color={colorMode === "dark" ? "black.500" : "blackAlpha.900"}
-          aria-label="Profile"
-          onClick={handleMenuToggle}
-        />
-        <MenuList
-          bg={colorMode === "light" ? "white" : "gray.700"}
-          color={colorMode === "light" ? "gray.800" : "white"}
-          border="none"
-        >
-          <Flex alignItems="center" p={4}>
-            <FaUser size={24} />
-            <Text ml={3} fontWeight="bold">
-              {user?.name || "User"}
-            </Text>
-          </Flex>
-
-          <MenuItem
-            _hover={{ bg: "gray.300" }}
-            bg={colorMode === "light" ? "white" : "gray.700"}
-            onClick={logout}
-          >
-            Log Out
-          </MenuItem>
-        </MenuList>
-      </Menu>
-    </HStack>
-
-    {/* Mobile Hamburger + Icons */}
-    <HStack spacing={2} display={{ base: "flex", md: "none" }}>
-      <IconButton
-        icon={colorMode === "light" ? <FaMoon /> : <FaSun />}
-        isRound
-        size="sm"
-        onClick={toggleColorMode}
-        aria-label="Toggle Dark Mode"
-        bg={colorMode === "light" ? "gray.200" : "gray.700"}
-        color={colorMode === "light" ? "black" : "white.300"}
-      />
-      <Menu>
-        <MenuButton
-          as={IconButton}
-          icon={<FaUser />}
-          isRound
-          size="sm"
-          color={colorMode === "dark" ? "black.500" : "blackAlpha.900"}
-          aria-label="Profile"
-        />
-        <MenuList
-          bg={colorMode === "light" ? "white" : "gray.700"}
-          color={colorMode === "light" ? "gray.800" : "white"}
-          border="none"
-        >
-          <Flex alignItems="center" p={4}>
-            <FaUser size={24} />
-            <Text ml={3} fontWeight="bold">
-              {user?.name || "User"}
-            </Text>
-          </Flex>
-
-          <MenuItem
-            _hover={{ bg: "gray.300" }}
-            bg={colorMode === "light" ? "white" : "gray.700"}
-            onClick={logout}
-          >
-            Log Out
-          </MenuItem>
-        </MenuList>
-      </Menu>
-      <IconButton
-        icon={isMobileNavOpen ? <FaTimes /> : <FaBars />}
-        size="sm"
-        onClick={onMobileNavToggle}
-        aria-label="Toggle Navigation"
-        variant="ghost"
-        color="white"
-        _hover={{ bg: "whiteAlpha.200" }}
-      />
-    </HStack>
-  </Flex>
-
-  {/* Mobile Nav Dropdown */}
-  <Collapse in={isMobileNavOpen} animateOpacity>
-    <VStack
-      display={{ base: "flex", md: "none" }}
-      spacing={3}
-      pt={4}
-      pb={2}
-      align="stretch"
-    >
-      <Link
-        fontSize="md"
-        fontWeight="bold"
-        color={currentPage === "/" ? "teal.300" : "white"}
-        _hover={{ color: "teal.300" }}
-        onClick={() => { window.location.reload(); onMobileNavToggle(); }}
-        px={2}
-        py={1}
-      >
-        Home
-      </Link>
-      <Link
-        onClick={() => { handleScrollToFeatures(); onMobileNavToggle(); }}
-        fontSize="md"
-        fontWeight="bold"
-        color="white"
-        _hover={{ color: "teal.300" }}
-        px={2}
-        py={1}
-      >
-        Features
-      </Link>
-      <Link
-        onClick={() => { handleScrollToAboutUs(); onMobileNavToggle(); }}
-        fontSize="md"
-        fontWeight="bold"
-        color="white"
-        _hover={{ color: "teal.300" }}
-        px={2}
-        py={1}
-      >
-        About Us
-      </Link>
-    </VStack>
-  </Collapse>
-</MotionBox>
-
-
          {/* Soul Flex Section */}
          <Box
         width="100%"
         textAlign="center"
-        mt={{ base: "80px", md: "125px" }} // Adjust based on the header height
+        mt={{ base: "10px", md: "20px" }} // Adjust based on layout header padding
         mb={2}
         bg={colorMode === "light" ? "transparent.50" : "transparent.900"}
         p={2}
@@ -390,12 +196,12 @@ export const MainPage = () => {
             initial="hidden"
             animate="visible"
           />
-          <Heading size="lg" mb={2} color={colorMode === "light" ? "black.800" : "black.200"}>
+          <Heading size="lg" mb={2} color={colorMode === "light" ? "gray.800" : "gray.200"}>
             Soul Flex
           </Heading>
           <Text
             fontSize="lg"
-            color={colorMode === "light" ? "black.600" : "black.400"}
+            color={colorMode === "light" ? "gray.600" : "gray.400"}
           >
             Empowering your mental strength with advanced techniques and tools.
           </Text>
@@ -405,7 +211,7 @@ export const MainPage = () => {
 
 
       {/* Padding for content below the header */}
-      <Box pt="80px">
+      <Box pt="20px">
         {" "}
         {/* Adjust this value based on header height */}
         {/* Introduction Section */}
@@ -497,7 +303,7 @@ export const MainPage = () => {
       <MotionButton
         as={RouterLink}
         to="/articles"
-        color={colorMode === "light" ? "black.500" : "teal.300"}
+        color={colorMode === "light" ? "teal.600" : "teal.300"}
         mt={4}
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
@@ -542,7 +348,7 @@ export const MainPage = () => {
       <MotionButton
         as={RouterLink}
         to="/video"
-        color={colorMode === "light" ? "black.500" : "teal.300"}
+        color={colorMode === "light" ? "teal.600" : "teal.300"}
         mt={4 }
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
@@ -587,7 +393,7 @@ export const MainPage = () => {
       <MotionButton
         as={RouterLink}
         to="/exercises"
-        color={colorMode === "light" ? "black.500" : "teal.300"}
+        color={colorMode === "light" ? "teal.600" : "teal.300"}
         mt={4}
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
@@ -632,7 +438,7 @@ export const MainPage = () => {
       <MotionButton
         as={RouterLink}
         to="/mind"
-        color={colorMode === "light" ? "black.500" : "teal.300"}
+        color={colorMode === "light" ? "teal.600" : "teal.300"}
         mt={4}
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
@@ -677,7 +483,7 @@ export const MainPage = () => {
       <MotionButton
         as={RouterLink}
         to="/goal"
-        color={colorMode === "light" ? "black.500" : "teal.300"}
+        color={colorMode === "light" ? "teal.600" : "teal.300"}
         mt={4}
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
@@ -722,7 +528,7 @@ export const MainPage = () => {
       <MotionButton
         as={RouterLink}
         to="/music"
-        color={colorMode === "light" ? "black.500" : "teal.300"}
+        color={colorMode === "light" ? "teal.600" : "teal.300"}
         mt={4}
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
