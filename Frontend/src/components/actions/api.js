@@ -1,1 +1,1 @@
-export const api = process.env.REACT_APP_API_URL || "http://localhost:9000";
+export const api = process.env.REACT_APP_API_URL || "https://fitnessproject-4rml.onrender.com";

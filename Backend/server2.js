@@ -10,8 +10,8 @@ dotenv.config();
 // Database Connection
 let db;
 async function connectToDB(cb) {
-    const url = process.env.MONGODB_URI || process.env.MONGO_URI || "mongodb://localhost:27017";
-    const dbName = process.env.DB_NAME || (url.includes("localhost") ? "task" : undefined);
+    const url = process.env.MONGODB_URI || process.env.MONGO_URI;
+    const dbName = process.env.DB_NAME || "task";
     const client = new MongoClient(url);
     await client.connect();
     db = client.db(dbName);
@@ -22,7 +22,7 @@ async function connectToDB(cb) {
 const app = express();
 
 const allowedOrigins = [
-    "http://localhost:3000",
+    "https://fitnessproject-4rml.onrender.com",
     process.env.FRONTEND_URL
 ].filter(Boolean);
 

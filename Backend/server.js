@@ -10,8 +10,8 @@ const port = 9000;
 app.use(express.json());  
 
 // MongoDB connection setup
-const url = process.env.MONGODB_URI || process.env.MONGO_URI || 'mongodb://localhost:27017';
-const dbName = process.env.DB_NAME || (url.includes("localhost") ? 'ast' : undefined);
+const url = process.env.MONGODB_URI || process.env.MONGO_URI;
+const dbName = process.env.DB_NAME || 'ast';
 let db;
 
 MongoClient.connect(url)
@@ -100,5 +100,5 @@ app.post('/updatemany', async(req, res) => {
 });
 
 app.listen(port, () => {
-  console.log(`Server is running at http://localhost:${port}`);
+  console.log(`Server is running on port ${port}`);
 });
