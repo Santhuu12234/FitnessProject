@@ -10,12 +10,12 @@ dotenv.config();
 // Database Connection
 let db;
 async function connectToDB(cb) {
-    const url = process.env.MONGODB_URI || "mongodb://localhost:27017";
-    const dbName = process.env.DB_NAME || "task";
+    const url = process.env.MONGODB_URI || process.env.MONGO_URI || "mongodb://localhost:27017";
+    const dbName = process.env.DB_NAME || (url.includes("localhost") ? "task" : undefined);
     const client = new MongoClient(url);
     await client.connect();
     db = client.db(dbName);
-    console.log(`Connected to MongoDB database: ${dbName}`);
+    console.log(`Connected to MongoDB database: ${dbName || 'default (from URI)'}`);
     cb();
 }
 

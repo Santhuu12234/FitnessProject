@@ -1,5 +1,8 @@
 import express from 'express';
 import { MongoClient } from 'mongodb';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 const app = express();
 const port = 9000;
@@ -7,11 +10,11 @@ const port = 9000;
 app.use(express.json());  
 
 // MongoDB connection setup
-const url = 'mongodb://localhost:27017';
-const dbName = 'ast';
+const url = process.env.MONGODB_URI || process.env.MONGO_URI || 'mongodb://localhost:27017';
+const dbName = process.env.DB_NAME || (url.includes("localhost") ? 'ast' : undefined);
 let db;
 
-MongoClient.connect(url, { useNewUrlParser: true, useUnifiedTopology: true })
+MongoClient.connect(url)
   .then((client) => {
     console.log('Connected successfully to MongoDB server');
     db = client.db(dbName);
